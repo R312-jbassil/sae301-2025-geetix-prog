@@ -1,0 +1,155 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Inscription - TaVue">
+  <div class="min-h-screen flex items-center justify-center px-4">
+    <div class="card w-full max-w-md bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h2 class="card-title text-3xl font-bold mb-6 text-center">
+          Créer un compte
+        </h2>
+
+        <div id="error-message" class="alert alert-error hidden mb-4">
+          <span></span>
+        </div>
+
+        <form id="signup-form" class="space-y-4">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Nom</span>
+            </label>
+            <input
+              type="text"
+              id="nom"
+              placeholder="Dupont"
+              class="input input-bordered w-full"
+              required
+            />
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Prénom</span>
+            </label>
+            <input
+              type="text"
+              id="prenom"
+              placeholder="Jean"
+              class="input input-bordered w-full"
+              required
+            />
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Email</span>
+            </label>
+            <input
+              type="email"
+              id="email"
+              placeholder="votre@email.com"
+              class="input input-bordered w-full"
+              required
+            />
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Mot de passe</span>
+            </label>
+            <input
+              type="password"
+              id="password"
+              placeholder="••••••••"
+              class="input input-bordered w-full"
+              required
+              minlength="8"
+            />
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Confirmer le mot de passe</span>
+            </label>
+            <input
+              type="password"
+              id="password-confirm"
+              placeholder="••••••••"
+              class="input input-bordered w-full"
+              required
+              minlength="8"
+            />
+          </div>
+
+          <div class="form-control mt-6">
+            <button type="submit" class="btn btn-primary w-full">
+              S'inscrire
+            </button>
+          </div>
+        </form>
+
+        <div class="divider">OU</div>
+
+        <a href="/profile" class="btn btn-outline w-full">
+          J'ai déjà un compte
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import PocketBase from "pocketbase";
+
+  const pb = new PocketBase("http://127.0.0.1:8090");
+
+  document
+    .getElementById("signup-form")!
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const nom = (document.getElementById("nom") as HTMLInputElement).value;
+      const prenom = (document.getElementById("prenom") as HTMLInputElement)
+        .value;
+      const email = (document.getElementById("email") as HTMLInputElement)
+        .value;
+      const password = (document.getElementById("password") as HTMLInputElement)
+        .value;
+      const passwordConfirm = (
+        document.getElementById("password-confirm") as HTMLInputElement
+      ).value;
+      const errorDiv = document.getElementById("error-message")!;
+
+      if (password !== passwordConfirm) {
+        errorDiv.classList.remove("hidden");
+        errorDiv.querySelector("span")!.textContent =
+          "Les mots de passe ne correspondent pas";
+        return;
+      }
+
+      try {
+        await pb.collection("users").create({
+          email: email,
+          password: password,
+          passwordConfirm: passwordConfirm,
+          nom: nom,
+          prenom: prenom,
+        });
+
+        await pb.collection("users").authWithPassword(email, password);
+
+        const authData = JSON.stringify({
+          token: pb.authStore.token,
+          model: pb.authStore.model,
+        });
+        document.cookie = `pb_auth=${encodeURIComponent(authData)}; path=/; max-age=86400`;
+
+        window.location.href = "/profile";
+      } catch (error: any) {
+        errorDiv.classList.remove("hidden");
+        errorDiv.querySelector("span")!.textContent =
+          error.message || "Erreur lors de l'inscription";
+      }
+    });
+</script>

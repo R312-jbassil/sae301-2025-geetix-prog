@@ -1,220 +1,244 @@
 ---
 import Layout from "../layouts/Layout.astro";
+
+// Vérifier l'authentification
+const authCookie = Astro.cookies.get("pb_auth");
+if (!authCookie) {
+  return Astro.redirect("/connexion");
+}
 ---
 
 <Layout title="Configurateur - TaVue">
-  <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Configurez vos lunettes</h1>
+  <div class="container mx-auto px-6 py-12">
+    <h1 class="font-coiny text-5xl text-accent mb-12 text-center">
+      Configurez vos lunettes
+    </h1>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
       <!-- Prévisualisation SVG -->
-      <div class="bg-base-200 p-8 rounded-lg flex items-center justify-center">
-        <div id="svg-preview" class="w-full max-w-lg">
-          <!-- SVG sera injecté ici -->
+      <div class="card bg-base-200 shadow-xl">
+        <div class="card-body p-12 flex items-center justify-center">
+          <div id="svg-preview" class="w-full max-w-lg">
+            <!-- SVG sera injecté ici -->
+          </div>
         </div>
       </div>
 
       <!-- Formulaire de configuration -->
-      <div class="space-y-6">
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text font-semibold">Matériau de la monture</span>
-          </label>
-          <div class="grid grid-cols-3 gap-3">
-            <button
-              class="p-4 border-2 border-gray-300 rounded-lg hover:border-primary transition-all text-center cursor-pointer bg-white ring-2 ring-primary"
-              data-type="monture"
-              data-color="#000000"
-            >
-              <div
-                class="w-12 h-12 rounded-full mx-auto"
-                style="background: #000000;"
+      <div class="space-y-8 font-poppins">
+        <div class="card bg-base-100 shadow-lg">
+          <div class="card-body">
+            <h2 class="card-title font-coiny text-2xl text-accent mb-4">
+              Matériau de la monture
+            </h2>
+            <div class="grid grid-cols-3 gap-4">
+              <button
+                class="btn btn-outline hover:btn-accent p-6 h-auto flex-col gap-3 ring-2 ring-accent"
+                data-type="monture"
+                data-color="#000000"
               >
-              </div>
-              <span class="text-sm mt-2 block">Noir</span>
-            </button>
-            <button
-              class="p-4 border-2 border-gray-300 rounded-lg hover:border-primary transition-all text-center cursor-pointer bg-white"
-              data-type="monture"
-              data-color="#8B4513"
-            >
-              <div
-                class="w-12 h-12 rounded-full mx-auto"
-                style="background: #8B4513;"
+                <div
+                  class="w-14 h-14 rounded-full border-2 border-base-300"
+                  style="background: #000000;"
+                >
+                </div>
+                <span class="text-sm font-medium">Noir</span>
+              </button>
+              <button
+                class="btn btn-outline hover:btn-accent p-6 h-auto flex-col gap-3"
+                data-type="monture"
+                data-color="#8B4513"
               >
-              </div>
-              <span class="text-sm mt-2 block">Écaille</span>
-            </button>
-            <button
-              class="p-4 border-2 border-gray-300 rounded-lg hover:border-primary transition-all text-center cursor-pointer bg-white"
-              data-type="monture"
-              data-color="#1E3A5F"
-            >
-              <div
-                class="w-12 h-12 rounded-full mx-auto"
-                style="background: #1E3A5F;"
+                <div
+                  class="w-14 h-14 rounded-full border-2 border-base-300"
+                  style="background: #8B4513;"
+                >
+                </div>
+                <span class="text-sm font-medium">Écaille</span>
+              </button>
+              <button
+                class="btn btn-outline hover:btn-accent p-6 h-auto flex-col gap-3"
+                data-type="monture"
+                data-color="#1E3A5F"
               >
-              </div>
-              <span class="text-sm mt-2 block">Bleu marine</span>
-            </button>
-            <button
-              class="p-4 border-2 border-gray-300 rounded-lg hover:border-primary transition-all text-center cursor-pointer bg-white"
-              data-type="monture"
-              data-color="#D4A5A5"
-            >
-              <div
-                class="w-12 h-12 rounded-full mx-auto"
-                style="background: #D4A5A5;"
+                <div
+                  class="w-14 h-14 rounded-full border-2 border-base-300"
+                  style="background: #1E3A5F;"
+                >
+                </div>
+                <span class="text-sm font-medium">Bleu marine</span>
+              </button>
+              <button
+                class="btn btn-outline hover:btn-accent p-6 h-auto flex-col gap-3"
+                data-type="monture"
+                data-color="#D4A5A5"
               >
-              </div>
-              <span class="text-sm mt-2 block">Or rose</span>
-            </button>
-            <button
-              class="p-4 border-2 border-gray-300 rounded-lg hover:border-primary transition-all text-center cursor-pointer bg-white"
-              data-type="monture"
-              data-color="#C0C0C0"
-            >
-              <div
-                class="w-12 h-12 rounded-full mx-auto"
-                style="background: #C0C0C0;"
+                <div
+                  class="w-14 h-14 rounded-full border-2 border-base-300"
+                  style="background: #D4A5A5;"
+                >
+                </div>
+                <span class="text-sm font-medium">Or rose</span>
+              </button>
+              <button
+                class="btn btn-outline hover:btn-accent p-6 h-auto flex-col gap-3"
+                data-type="monture"
+                data-color="#C0C0C0"
               >
-              </div>
-              <span class="text-sm mt-2 block">Argent</span>
-            </button>
-            <button
-              class="p-4 border-2 border-gray-300 rounded-lg hover:border-primary transition-all text-center cursor-pointer bg-white"
-              data-type="monture"
-              data-color="#E8D5C4"
-            >
-              <div
-                class="w-12 h-12 rounded-full mx-auto"
-                style="background: #E8D5C4;"
+                <div
+                  class="w-14 h-14 rounded-full border-2 border-base-300"
+                  style="background: #C0C0C0;"
+                >
+                </div>
+                <span class="text-sm font-medium">Argent</span>
+              </button>
+              <button
+                class="btn btn-outline hover:btn-accent p-6 h-auto flex-col gap-3"
+                data-type="monture"
+                data-color="#E8D5C4"
               >
-              </div>
-              <span class="text-sm mt-2 block">Beige</span>
-            </button>
+                <div
+                  class="w-14 h-14 rounded-full border-2 border-base-300"
+                  style="background: #E8D5C4;"
+                >
+                </div>
+                <span class="text-sm font-medium">Beige</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text font-semibold">Couleur des branches</span>
-          </label>
-          <div class="grid grid-cols-3 gap-3">
-            <button
-              class="p-4 border-2 border-gray-300 rounded-lg hover:border-primary transition-all text-center cursor-pointer bg-white ring-2 ring-primary"
-              data-type="branches"
-              data-color="#000000"
-            >
-              <div
-                class="w-12 h-12 rounded-full mx-auto"
-                style="background: #000000;"
+        <div class="card bg-base-100 shadow-lg">
+          <div class="card-body">
+            <h2 class="card-title font-coiny text-2xl text-accent mb-4">
+              Couleur des branches
+            </h2>
+            <div class="grid grid-cols-3 gap-4">
+              <button
+                class="btn btn-outline hover:btn-accent p-6 h-auto flex-col gap-3 ring-2 ring-accent"
+                data-type="branches"
+                data-color="#000000"
               >
-              </div>
-              <span class="text-sm mt-2 block">Noir</span>
-            </button>
-            <button
-              class="p-4 border-2 border-gray-300 rounded-lg hover:border-primary transition-all text-center cursor-pointer bg-white"
-              data-type="branches"
-              data-color="#8B4513"
-            >
-              <div
-                class="w-12 h-12 rounded-full mx-auto"
-                style="background: #8B4513;"
+                <div
+                  class="w-14 h-14 rounded-full border-2 border-base-300"
+                  style="background: #000000;"
+                >
+                </div>
+                <span class="text-sm font-medium">Noir</span>
+              </button>
+              <button
+                class="btn btn-outline hover:btn-accent p-6 h-auto flex-col gap-3"
+                data-type="branches"
+                data-color="#8B4513"
               >
-              </div>
-              <span class="text-sm mt-2 block">Écaille</span>
-            </button>
-            <button
-              class="p-4 border-2 border-gray-300 rounded-lg hover:border-primary transition-all text-center cursor-pointer bg-white"
-              data-type="branches"
-              data-color="#1E3A5F"
-            >
-              <div
-                class="w-12 h-12 rounded-full mx-auto"
-                style="background: #1E3A5F;"
+                <div
+                  class="w-14 h-14 rounded-full border-2 border-base-300"
+                  style="background: #8B4513;"
+                >
+                </div>
+                <span class="text-sm font-medium">Écaille</span>
+              </button>
+              <button
+                class="btn btn-outline hover:btn-accent p-6 h-auto flex-col gap-3"
+                data-type="branches"
+                data-color="#1E3A5F"
               >
-              </div>
-              <span class="text-sm mt-2 block">Bleu marine</span>
-            </button>
-            <button
-              class="p-4 border-2 border-gray-300 rounded-lg hover:border-primary transition-all text-center cursor-pointer bg-white"
-              data-type="branches"
-              data-color="#D4A5A5"
-            >
-              <div
-                class="w-12 h-12 rounded-full mx-auto"
-                style="background: #D4A5A5;"
+                <div
+                  class="w-14 h-14 rounded-full border-2 border-base-300"
+                  style="background: #1E3A5F;"
+                >
+                </div>
+                <span class="text-sm font-medium">Bleu marine</span>
+              </button>
+              <button
+                class="btn btn-outline hover:btn-accent p-6 h-auto flex-col gap-3"
+                data-type="branches"
+                data-color="#D4A5A5"
               >
-              </div>
-              <span class="text-sm mt-2 block">Or rose</span>
-            </button>
-            <button
-              class="p-4 border-2 border-gray-300 rounded-lg hover:border-primary transition-all text-center cursor-pointer bg-white"
-              data-type="branches"
-              data-color="#C0C0C0"
-            >
-              <div
-                class="w-12 h-12 rounded-full mx-auto"
-                style="background: #C0C0C0;"
+                <div
+                  class="w-14 h-14 rounded-full border-2 border-base-300"
+                  style="background: #D4A5A5;"
+                >
+                </div>
+                <span class="text-sm font-medium">Or rose</span>
+              </button>
+              <button
+                class="btn btn-outline hover:btn-accent p-6 h-auto flex-col gap-3"
+                data-type="branches"
+                data-color="#C0C0C0"
               >
-              </div>
-              <span class="text-sm mt-2 block">Argent</span>
-            </button>
-            <button
-              class="p-4 border-2 border-gray-300 rounded-lg hover:border-primary transition-all text-center cursor-pointer bg-white"
-              data-type="branches"
-              data-color="#E8D5C4"
-            >
-              <div
-                class="w-12 h-12 rounded-full mx-auto"
-                style="background: #E8D5C4;"
+                <div
+                  class="w-14 h-14 rounded-full border-2 border-base-300"
+                  style="background: #C0C0C0;"
+                >
+                </div>
+                <span class="text-sm font-medium">Argent</span>
+              </button>
+              <button
+                class="btn btn-outline hover:btn-accent p-6 h-auto flex-col gap-3"
+                data-type="branches"
+                data-color="#E8D5C4"
               >
-              </div>
-              <span class="text-sm mt-2 block">Beige</span>
-            </button>
+                <div
+                  class="w-14 h-14 rounded-full border-2 border-base-300"
+                  style="background: #E8D5C4;"
+                >
+                </div>
+                <span class="text-sm font-medium">Beige</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text font-semibold">Largeur du pont (mm)</span>
-          </label>
-          <input
-            type="range"
-            id="largeur-pont"
-            min="14"
-            max="22"
-            value="18"
-            class="range range-primary"
-            step="1"
-          />
-          <div class="flex justify-between text-xs px-2 mt-2">
-            <span>14mm</span>
-            <span>18mm</span>
-            <span>22mm</span>
+        <div class="card bg-base-100 shadow-lg">
+          <div class="card-body">
+            <h2 class="card-title font-coiny text-2xl text-accent mb-4">
+              Largeur du pont
+            </h2>
+            <input
+              type="range"
+              id="largeur-pont"
+              min="14"
+              max="22"
+              value="18"
+              class="range range-accent w-full"
+              step="1"
+            />
+            <div class="flex justify-between text-sm px-2 mt-3 font-medium">
+              <span>14mm</span>
+              <span>18mm</span>
+              <span>22mm</span>
+            </div>
           </div>
         </div>
 
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text font-semibold">Taille des verres</span>
-          </label>
-          <select id="taille-verres" class="select select-bordered w-full">
-            <option value="1">Petit</option>
-            <option value="1.1" selected>Moyen</option>
-            <option value="1.2">Grand</option>
-          </select>
+        <div class="card bg-base-100 shadow-lg">
+          <div class="card-body">
+            <h2 class="card-title font-coiny text-2xl text-accent mb-4">
+              Taille des verres
+            </h2>
+            <select
+              id="taille-verres"
+              class="select select-bordered select-accent w-full text-lg"
+            >
+              <option value="1">Petit</option>
+              <option value="1.1" selected>Moyen</option>
+              <option value="1.2">Grand</option>
+            </select>
+          </div>
         </div>
 
-        <div class="divider"></div>
+        <div class="divider my-8"></div>
 
         <div class="flex gap-4">
-          <button id="save-btn" class="btn btn-primary flex-1">
-            Sauvegarder
+          <button
+            id="save-btn"
+            class="btn btn-accent flex-1 text-lg font-semibold"
+          >
+            💾 Sauvegarder
           </button>
-          <button id="reset-btn" class="btn btn-outline">
-            Réinitialiser
+          <button id="reset-btn" class="btn btn-outline btn-accent">
+            🔄 Réinitialiser
           </button>
         </div>
       </div>
@@ -222,28 +246,82 @@ import Layout from "../layouts/Layout.astro";
 
     <!-- Modal de sauvegarde -->
     <dialog id="save-modal" class="modal">
-      <div class="modal-box">
-        <h3 class="font-bold text-lg mb-4">Nommer vos lunettes</h3>
-        <div class="form-control">
+      <div class="modal-box max-w-lg">
+        <h3 class="font-coiny text-3xl text-accent mb-6">
+          Nommer vos lunettes
+        </h3>
+        <div class="form-control font-poppins">
           <label class="label">
-            <span class="label-text">Nom du modèle</span>
+            <span class="label-text text-base font-medium">Nom du modèle</span>
           </label>
           <input
             type="text"
             id="model-name"
             placeholder="Ex: Lunettes TaVue Classic"
-            class="input input-bordered w-full"
+            class="input input-bordered input-accent w-full text-lg"
           />
         </div>
         <div class="modal-action">
-          <button id="confirm-save" class="btn btn-primary">Sauvegarder</button>
-          <button id="cancel-save" class="btn">Annuler</button>
+          <button
+            id="confirm-save"
+            class="btn btn-accent font-poppins font-semibold"
+            >💾 Sauvegarder</button
+          >
+          <button
+            id="cancel-save"
+            class="btn btn-outline btn-accent font-poppins">Annuler</button
+          >
         </div>
       </div>
       <form method="dialog" class="modal-backdrop">
         <button>close</button>
       </form>
     </dialog>
+
+    <!-- Toast de succès -->
+    <div class="toast toast-top toast-center hidden" id="success-toast">
+      <div class="alert alert-success shadow-lg">
+        <div class="flex items-center gap-3">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="stroke-current flex-shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg
+          >
+          <span class="font-poppins font-semibold"
+            >Lunettes sauvegardées avec succès ! 🎉</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast d'erreur -->
+    <div class="toast toast-top toast-center hidden" id="error-toast">
+      <div class="alert alert-error shadow-lg">
+        <div class="flex items-center gap-3">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="stroke-current flex-shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path></svg
+          >
+          <span class="font-poppins font-semibold" id="error-message"
+            >Erreur de sauvegarde</span
+          >
+        </div>
+      </div>
+    </div>
   </div>
 </Layout>
 
@@ -285,6 +363,26 @@ import Layout from "../layouts/Layout.astro";
     tailleVerres: 1.1,
   };
 
+  // Fonction pour afficher le toast de succès
+  function showSuccessToast() {
+    const toast = document.getElementById("success-toast")!;
+    toast.classList.remove("hidden");
+    setTimeout(() => {
+      toast.classList.add("hidden");
+    }, 3000);
+  }
+
+  // Fonction pour afficher le toast d'erreur
+  function showErrorToast(message: string) {
+    const toast = document.getElementById("error-toast")!;
+    const messageEl = document.getElementById("error-message")!;
+    messageEl.textContent = message;
+    toast.classList.remove("hidden");
+    setTimeout(() => {
+      toast.classList.add("hidden");
+    }, 3000);
+  }
+
   function updateSVG() {
     const pontOffset = (currentConfig.largeurPont - 18) * 2;
     const verresTranslate = -(currentConfig.tailleVerres - 1.1) * 100;
@@ -306,9 +404,9 @@ import Layout from "../layouts/Layout.astro";
       const color = button.dataset.color!;
 
       document.querySelectorAll(`[data-type="${type}"]`).forEach((b) => {
-        b.classList.remove("ring-2", "ring-primary");
+        b.classList.remove("ring-2", "ring-accent");
       });
-      button.classList.add("ring-2", "ring-primary");
+      button.classList.add("ring-2", "ring-accent");
 
       if (type === "monture") {
         currentConfig.materiauMonture = color;
@@ -349,7 +447,7 @@ import Layout from "../layouts/Layout.astro";
       ).value;
 
       if (!modelName.trim()) {
-        alert("Veuillez entrer un nom");
+        showErrorToast("Veuillez entrer un nom");
         return;
       }
 
@@ -374,12 +472,12 @@ import Layout from "../layouts/Layout.astro";
           modal.close();
           (document.getElementById("model-name") as HTMLInputElement).value =
             "";
-          alert("Lunettes sauvegardées !");
+          showSuccessToast();
         } else {
-          alert("Erreur : " + data.error);
+          showErrorToast("Erreur : " + data.error);
         }
       } catch (error) {
-        alert("Erreur de sauvegarde");
+        showErrorToast("Erreur de sauvegarde");
         console.error(error);
       }
     });
@@ -394,10 +492,10 @@ import Layout from "../layouts/Layout.astro";
 
     document
       .querySelectorAll("[data-type]")
-      .forEach((btn) => btn.classList.remove("ring-2", "ring-primary"));
+      .forEach((btn) => btn.classList.remove("ring-2", "ring-accent"));
     document
       .querySelectorAll('[data-color="#000000"]')
-      .forEach((btn) => btn.classList.add("ring-2", "ring-primary"));
+      .forEach((btn) => btn.classList.add("ring-2", "ring-accent"));
 
     (document.getElementById("largeur-pont") as HTMLInputElement).value = "18";
     (document.getElementById("taille-verres") as HTMLSelectElement).value =
