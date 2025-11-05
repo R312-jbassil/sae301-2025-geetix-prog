@@ -32,7 +32,7 @@ jobs:
         username: ${{ secrets.USERS }}
         key: ${{ secrets.PRIVATE_KEY }}
         port: 22005
-        source: "dist/*,package.json,package-lock.json"
+        source: "dist/*"
         target: "/var/www/sae301/"
         strip_components: 1
         rm: false
@@ -47,7 +47,4 @@ jobs:
         port: 22005
         script: |
           cd /var/www/sae301/server
-          npm ci
-          npm install astro
-          npm install send server-destroy
           PORT=8085 pm2 restart sae301 || PORT=8085 pm2 start entry.mjs --name sae301
