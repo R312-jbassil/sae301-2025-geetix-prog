@@ -16,7 +16,7 @@ export const POST = async ({ request, cookies }) => {
     const authData = JSON.parse(decodeURIComponent(authCookie.value));
     pb.authStore.save(authData.token, authData.model);
 
-    const userId = pb.authStore.model.id;
+    console.log("Config reçue:", config);
 
     const record = await pb.collection("Lunettes").create({
       nom_modele: modelName,
@@ -26,8 +26,11 @@ export const POST = async ({ request, cookies }) => {
       taille_verres: config.tailleVerres.toString(),
       couleur_monture: config.materiauMonture,
       couleur_branches: config.couleurBranches,
-      user: userId, // Changé de id_user à user
+      materiau: config.materiauId || null,
+      user: pb.authStore.model.id,
     });
+
+    console.log("Lunette créée:", record);
 
     return new Response(JSON.stringify({ success: true, id: record.id }), {
       status: 200,

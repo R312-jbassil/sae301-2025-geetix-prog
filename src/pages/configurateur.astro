@@ -1,10 +1,20 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import PocketBase from "pocketbase";
 
 // Vérifier l'authentification
 const authCookie = Astro.cookies.get("pb_auth");
 if (!authCookie) {
   return Astro.redirect("/connexion");
+}
+
+// Récupérer les matériaux
+const pb = new PocketBase("http://127.0.0.1:8090");
+let materiaux = [];
+try {
+  materiaux = await pb.collection("Materiau").getFullList({ sort: "libelle" });
+} catch (error) {
+  console.error("Erreur matériaux:", error);
 }
 ---
 
@@ -26,6 +36,36 @@ if (!authCookie) {
 
       <!-- Formulaire de configuration -->
       <div class="space-y-8 font-poppins">
+        <div class="card bg-base-100 shadow-lg">
+          <div class="card-body">
+            <h2 class="card-title font-coiny text-2xl text-accent mb-4">
+              Choisir le matériau
+            </h2>
+            <div class="grid grid-cols-3 gap-4">
+              {
+                materiaux.map((mat, index) => (
+                  <button
+                    class={`btn btn-outline hover:btn-accent p-6 h-auto flex-col gap-3 ${index === 0 ? "ring-2 ring-accent" : ""}`}
+                    data-type="materiau"
+                    data-color={mat.couleur}
+                    data-materiau-id={mat.id}
+                  >
+                    <div class="flex items-center justify-between w-full">
+                      <span class="text-lg font-medium">{mat.libelle}</span>
+                      <span class="text-sm opacity-70 block">
+                        {mat.prix_unitaire}€
+                      </span>
+                    </div>
+                    <p class="font-poppins opacity-70 font-light text-xs text-left">
+                      {mat.description}
+                    </p>
+                  </button>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+        
         <div class="card bg-base-100 shadow-lg">
           <div class="card-body">
             <h2 class="card-title font-coiny text-2xl text-accent mb-4">
@@ -356,14 +396,24 @@ if (!authCookie) {
     </g>
   </svg>`;
 
+  const firstMontureBtn = document.querySelector(
+    '[data-type="monture"]'
+  ) as HTMLButtonElement;
+  const firstBranchesBtn = document.querySelector(
+    '[data-type="branches"]'
+  ) as HTMLButtonElement;
+  const firstMateriauBtn = document.querySelector(
+    "[data-materiau-id]"
+  ) as HTMLButtonElement;
+
   let currentConfig = {
-    materiauMonture: "#000000",
-    couleurBranches: "#000000",
+    materiauMonture: firstMontureBtn?.dataset.color || "#000000",
+    couleurBranches: firstBranchesBtn?.dataset.color || "#000000",
+    materiauId: firstMateriauBtn?.dataset.materiauId || "",
     largeurPont: 18,
     tailleVerres: 1.1,
   };
 
-  // Fonction pour afficher le toast de succès
   function showSuccessToast() {
     const toast = document.getElementById("success-toast")!;
     toast.classList.remove("hidden");
@@ -372,7 +422,6 @@ if (!authCookie) {
     }, 3000);
   }
 
-  // Fonction pour afficher le toast d'erreur
   function showErrorToast(message: string) {
     const toast = document.getElementById("error-toast")!;
     const messageEl = document.getElementById("error-message")!;
@@ -397,6 +446,7 @@ if (!authCookie) {
     document.getElementById("svg-preview")!.innerHTML = svg;
   }
 
+  // Listeners pour les couleurs (monture et branches)
   document.querySelectorAll("[data-type]").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const button = e.currentTarget as HTMLButtonElement;
@@ -414,6 +464,21 @@ if (!authCookie) {
         currentConfig.couleurBranches = color;
       }
       updateSVG();
+    });
+  });
+
+  // Listener pour les matériaux (juste sauvegarder l'ID, pas de modification SVG)
+  document.querySelectorAll("[data-materiau-id]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const button = e.currentTarget as HTMLButtonElement;
+      const materiauId = button.dataset.materiauId!;
+
+      document.querySelectorAll("[data-materiau-id]").forEach((b) => {
+        b.classList.remove("ring-2", "ring-accent");
+      });
+      button.classList.add("ring-2", "ring-accent");
+
+      currentConfig.materiauId = materiauId;
     });
   });
 
@@ -483,9 +548,20 @@ if (!authCookie) {
     });
 
   document.getElementById("reset-btn")!.addEventListener("click", () => {
+    const firstMonture = document.querySelector(
+      '[data-type="monture"]'
+    ) as HTMLButtonElement;
+    const firstBranches = document.querySelector(
+      '[data-type="branches"]'
+    ) as HTMLButtonElement;
+    const firstMateriau = document.querySelector(
+      "[data-materiau-id]"
+    ) as HTMLButtonElement;
+
     currentConfig = {
-      materiauMonture: "#000000",
-      couleurBranches: "#000000",
+      materiauMonture: firstMonture?.dataset.color || "#000000",
+      couleurBranches: firstBranches?.dataset.color || "#000000",
+      materiauId: firstMateriau?.dataset.materiauId || "",
       largeurPont: 18,
       tailleVerres: 1.1,
     };
@@ -494,8 +570,12 @@ if (!authCookie) {
       .querySelectorAll("[data-type]")
       .forEach((btn) => btn.classList.remove("ring-2", "ring-accent"));
     document
-      .querySelectorAll('[data-color="#000000"]')
-      .forEach((btn) => btn.classList.add("ring-2", "ring-accent"));
+      .querySelectorAll("[data-materiau-id]")
+      .forEach((btn) => btn.classList.remove("ring-2", "ring-accent"));
+
+    firstMonture?.classList.add("ring-2", "ring-accent");
+    firstBranches?.classList.add("ring-2", "ring-accent");
+    firstMateriau?.classList.add("ring-2", "ring-accent");
 
     (document.getElementById("largeur-pont") as HTMLInputElement).value = "18";
     (document.getElementById("taille-verres") as HTMLSelectElement).value =
