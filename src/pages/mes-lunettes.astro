@@ -149,33 +149,71 @@ const lunettesAvecPrix = lunettes.map((lunette: any) => {
       }
     </div>
   </div>
+
+  <!-- Modal de confirmation de suppression -->
+  <dialog id="delete-modal" class="modal">
+    <div class="modal-box">
+      <h3 class="font-coiny text-2xl text-accent mb-4">Confirmer la suppression</h3>
+      <p class="font-poppins py-4">
+        Êtes-vous sûr de vouloir supprimer ces lunettes ? Cette action est irréversible.
+      </p>
+      <div class="modal-action">
+        <button id="confirm-delete" class="btn btn-error font-poppins">
+          🗑️ Supprimer
+        </button>
+        <button id="cancel-delete" class="btn btn-outline font-poppins">
+          Annuler
+        </button>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 </Layout>
 
 <script>
-  document.querySelectorAll(".delete-btn").forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-      if (!confirm("Sûr ?")) return;
-      
-      const id = (e.target as HTMLButtonElement).dataset.id;
-      const card = document.querySelector(`[data-lunette-id="${id}"]`);
-      
-      try {
-        const response = await fetch(`/api/lunettes/${id}/delete`, {
-          method: "DELETE",
-        });
+  let deleteId: string | null = null;
 
-        if (response.ok) {
-          card?.classList.add("opacity-0", "transition-opacity", "duration-300");
-          setTimeout(() => {
-            card?.remove();
-          }, 300);
-        } else {
-          alert("Erreur de suppression");
-        }
-      } catch (error) {
-        console.error("Erreur:", error);
+  document.querySelectorAll(".delete-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      deleteId = (e.target as HTMLButtonElement).dataset.id || null;
+      const modal = document.getElementById("delete-modal") as HTMLDialogElement;
+      modal.showModal();
+    });
+  });
+
+  document.getElementById("cancel-delete")!.addEventListener("click", () => {
+    const modal = document.getElementById("delete-modal") as HTMLDialogElement;
+    modal.close();
+    deleteId = null;
+  });
+
+  document.getElementById("confirm-delete")!.addEventListener("click", async () => {
+    if (!deleteId) return;
+
+    const card = document.querySelector(`[data-lunette-id="${deleteId}"]`);
+    const modal = document.getElementById("delete-modal") as HTMLDialogElement;
+
+    try {
+      const response = await fetch(`/api/lunettes/${deleteId}/delete`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        modal.close();
+        card?.classList.add("opacity-0", "transition-opacity", "duration-300");
+        setTimeout(() => {
+          card?.remove();
+        }, 300);
+      } else {
         alert("Erreur de suppression");
       }
-    });
+    } catch (error) {
+      console.error("Erreur:", error);
+      alert("Erreur de suppression");
+    }
+
+    deleteId = null;
   });
 </script>
