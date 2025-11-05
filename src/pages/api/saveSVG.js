@@ -3,18 +3,16 @@ import PocketBase from "pocketbase";
 export const POST = async ({ request }) => {
   try {
     const pb = new PocketBase("http://127.0.0.1:8090");
-    const { svg, config } = await request.json();
+    const { svg, config, modelName } = await request.json();
 
-    // Auth avec la collection "users"
     await pb
       .collection("users")
       .authWithPassword("mathis@gmail.com", "pocketbase");
 
     const user = pb.authStore.model;
 
-    // Sauvegarde dans la collection "Lunettes"
     const record = await pb.collection("Lunettes").create({
-      nom_modele: `Lunette_${Date.now()}`,
+      nom_modele: modelName,
       date_crea: new Date().toISOString(),
       code_svg: svg,
       largeur_pont: config.largeurPont,
