@@ -1,7 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// Si connecté, rediriger vers le profil avec les infos
 const authCookie = Astro.cookies.get('pb_auth');
 let isConnected = false;
 let userData = null;
@@ -116,13 +115,15 @@ if (authCookie) {
   )}
 </Layout>
 
-{!isConnected && (
-  <script>
-    import PocketBase from 'pocketbase';
-    
-    const pb = new PocketBase('http://127.0.0.1:8090');
-    
-    document.getElementById('login-form')!.addEventListener('submit', async (e) => {
+<script>
+  import PocketBase from 'pocketbase';
+  
+  const pb = new PocketBase('http://127.0.0.1:8090');
+  
+  // Formulaire de connexion
+  const loginForm = document.getElementById('login-form');
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
       const email = (document.getElementById('email') as HTMLInputElement).value;
@@ -144,14 +145,14 @@ if (authCookie) {
         errorDiv.querySelector('span')!.textContent = 'Email ou mot de passe incorrect';
       }
     });
-  </script>
-)}
+  }
 
-{isConnected && (
-  <script>
-    document.getElementById('logout-btn')!.addEventListener('click', () => {
-      document.cookie = 'pb_auth=; path=/; max-age=0';
-      window.location.href = '/profile';
+  // Bouton de déconnexion
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/connexion';
     });
-  </script>
-)}
+  }
+</script>

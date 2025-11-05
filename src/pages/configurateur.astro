@@ -27,8 +27,10 @@ try {
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
       <!-- Prévisualisation SVG -->
       <div class="card bg-base-200 shadow-xl">
-        <div class="card-body p-12 flex items-center justify-center">
-          <div id="svg-preview" class="w-full max-w-lg">
+        <div
+          class="card-body p-12 flex flex-col items-center justify-start h-full"
+        >
+          <div id="svg-preview" class="w-full">
             <!-- SVG sera injecté ici -->
           </div>
         </div>
@@ -65,7 +67,6 @@ try {
             </div>
           </div>
         </div>
-        
         <div class="card bg-base-100 shadow-lg">
           <div class="card-body">
             <h2 class="card-title font-coiny text-2xl text-accent mb-4">

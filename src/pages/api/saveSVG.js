@@ -2,51 +2,47 @@ import PocketBase from "pocketbase";
 
 export const POST = async ({ request, cookies }) => {
   try {
-    const pb = new PocketBase("http://127.0.0.1:8090");
-    const { svg, config, modelName } = await request.json();
+    const data = await request.json();
+    const { svg, config, modelName } = data;
 
+    const pb = new PocketBase("http://127.0.0.1:8090");
     const authCookie = cookies.get("pb_auth");
+
     if (!authCookie) {
       return new Response(JSON.stringify({ error: "Non authentifié" }), {
         status: 401,
-        headers: { "Content-Type": "application/json" },
       });
     }
 
     const authData = JSON.parse(decodeURIComponent(authCookie.value));
     pb.authStore.save(authData.token, authData.model);
 
-    console.log("Config reçue:", config);
+    // Remplace les placeholders par les vraies couleurs
+    let svgFinal = svg
+      .replace(/MONTURE_COLOR/g, config.materiauMonture)
+      .replace(/BRANCHES_COLOR/g, config.couleurBranches)
+      .replace(/PONT_OFFSET/g, ((config.largeurPont - 18) * 2).toString())
+      .replace(/VERRES_SCALE/g, config.tailleVerres.toString())
+      .replace(/VERRES_TRANSLATE/g, (-(config.tailleVerres - 1.1) * 100).toString());
 
     const record = await pb.collection("Lunettes").create({
+      user: pb.authStore.model.id,
       nom_modele: modelName,
-      date_crea: new Date().toISOString(),
-      code_svg: svg,
-      largeur_pont: config.largeurPont,
-      taille_verres: config.tailleVerres.toString(),
+      code_svg: svgFinal,
       couleur_monture: config.materiauMonture,
       couleur_branches: config.couleurBranches,
-      materiau: config.materiauId || null,
-      user: pb.authStore.model.id,
+      largeur_pont: config.largeurPont,
+      taille_verres: config.tailleVerres,
+      materiau: config.materiauId,
     });
 
-    console.log("Lunette créée:", record);
-
-    return new Response(JSON.stringify({ success: true, id: record.id }), {
+    return new Response(JSON.stringify({ success: true, record }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Erreur complète:", error);
-    return new Response(
-      JSON.stringify({
-        error: error.message,
-        details: error.response?.data,
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    console.error("Erreur saveSVG:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+    });
   }
 };

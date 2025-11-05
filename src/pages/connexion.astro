@@ -1,5 +1,11 @@
 ---
 import Layout from "../layouts/Layout.astro";
+
+// Vérifier si déjà connecté
+const authCookie = Astro.cookies.get('pb_auth');
+if (authCookie) {
+  return Astro.redirect('/profile');
+}
 ---
 
 <Layout title="Connexion - TaVue">
@@ -68,10 +74,8 @@ import Layout from "../layouts/Layout.astro";
     .addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const email = (document.getElementById("email") as HTMLInputElement)
-        .value;
-      const password = (document.getElementById("password") as HTMLInputElement)
-        .value;
+      const email = (document.getElementById("email") as HTMLInputElement).value;
+      const password = (document.getElementById("password") as HTMLInputElement).value;
       const errorDiv = document.getElementById("error-message")!;
 
       try {
@@ -83,7 +87,7 @@ import Layout from "../layouts/Layout.astro";
         });
         document.cookie = `pb_auth=${encodeURIComponent(authData)}; path=/; max-age=86400`;
 
-        window.location.href = "/configurateur";
+        window.location.href = "/mes-lunettes";
       } catch (error) {
         errorDiv.classList.remove("hidden");
         errorDiv.querySelector("span")!.textContent =
