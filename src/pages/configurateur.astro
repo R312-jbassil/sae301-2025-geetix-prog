@@ -9,7 +9,7 @@ if (!authCookie) {
 }
 
 // Récupérer les matériaux
-const pb = new PocketBase("https://sae301.mathis-guellati.fr");
+const pb = new PocketBase("http://127.0.0.1:8090");
 let materiaux = [];
 try {
   materiaux = await pb.collection("Materiau").getFullList({ sort: "libelle" });

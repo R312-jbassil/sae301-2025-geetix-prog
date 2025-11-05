@@ -2,7 +2,7 @@ import PocketBase from "pocketbase";
 
 export const DELETE = async ({ params, cookies }) => {
   try {
-    const pb = new PocketBase("https://sae301.mathis-guellati.fr");
+    const pb = new PocketBase("http://127.0.0.1:8090");
     const authCookie = cookies.get("pb_auth");
 
     if (!authCookie) {

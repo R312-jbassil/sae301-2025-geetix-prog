@@ -7,7 +7,7 @@ if (!authCookie) {
   return Astro.redirect("/connexion");
 }
 
-const pb = new PocketBase("https://sae301.mathis-guellati.fr");
+const pb = new PocketBase("http://127.0.0.1:8090");
 const authData = JSON.parse(decodeURIComponent(authCookie.value));
 pb.authStore.save(authData.token, authData.model);
 

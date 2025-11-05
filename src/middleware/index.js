@@ -1,6 +1,6 @@
 import PocketBase from "pocketbase";
 
-const pb = new PocketBase("https://sae301.mathis-guellati.fr");
+const pb = new PocketBase("http://127.0.0.1:8090");
 
 export const onRequest = async (context, next) => {
   // Charger l'auth depuis le cookie
@@ -47,7 +47,7 @@ export const onRequest = async (context, next) => {
   if (context.locals.user && context.url.pathname === "/connexion") {
     return new Response(null, {
       status: 303,
-      headers: { Location: "/galerie" },
+      headers: { Location: "/mes-lunettes" },
     });
   }
 
