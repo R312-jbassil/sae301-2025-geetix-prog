@@ -1,27 +1,19 @@
 import PocketBase from "pocketbase";
 
-const pb = new PocketBase("http://127.0.0.1:8090");
-
-export async function POST({ request, cookies }) {
+export const POST = async ({ request }) => {
   try {
+    const pb = new PocketBase("http://127.0.0.1:8090");
     const { svg, config } = await request.json();
 
-    // Récupérer le token d'auth depuis les cookies
-    const authCookie = cookies.get("pb_auth");
-    if (authCookie) {
-      pb.authStore.loadFromCookie(authCookie.value);
-    }
+    // Auth avec la collection "users"
+    await pb
+      .collection("users")
+      .authWithPassword("mathis@gmail.com", "pocketbase");
 
     const user = pb.authStore.model;
 
-    if (!user) {
-      return new Response(JSON.stringify({ error: "Non authentifié" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    const record = await pb.collection("Lunette").create({
+    // Sauvegarde dans la collection "Lunettes"
+    const record = await pb.collection("Lunettes").create({
       nom_modele: `Lunette_${Date.now()}`,
       date_crea: new Date().toISOString(),
       code_svg: svg,
@@ -37,10 +29,10 @@ export async function POST({ request, cookies }) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Erreur sauvegarde:", error);
+    console.error("Erreur:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
-}
+};
