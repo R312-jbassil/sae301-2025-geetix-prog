@@ -33,7 +33,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22025
+        port: 22005
         source: "dist/*"
         target: "/var/www/sae301/"
         strip_components: 1
@@ -47,7 +47,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22025
+        port: 22005
         script: |
           cd /var/www/sae301/server
           npm install --production
