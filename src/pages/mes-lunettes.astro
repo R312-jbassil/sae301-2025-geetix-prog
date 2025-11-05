@@ -1,134 +1,63 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getAllLunettes } from "../../backend/backend.mjs";
+import PocketBase from "pocketbase";
 
-// Vérifier l'authentification
 const authCookie = Astro.cookies.get("pb_auth");
 if (!authCookie) {
   return Astro.redirect("/connexion");
 }
 
-// Récupérer les lunettes via le backend
-const result = await getAllLunettes(authCookie.value);
-const lunettes = result.lunettes || [];
+const pb = new PocketBase("http://127.0.0.1:8090");
+const authData = JSON.parse(decodeURIComponent(authCookie.value));
+pb.authStore.save(authData.token, authData.model);
+
+const userId = pb.authStore.model.id;
+const lunettes = await pb.collection("Lunettes").getFullList({
+  filter: `user.id = "${userId}"`,
+  sort: "-created",
+});
 ---
 
-<Layout title="Ma collection - TaVue">
-  <div class="container mx-auto px-6 py-12">
-    <h1 class="font-coiny text-5xl text-accent mb-4 text-center">
-      Votre collection
-    </h1>
-    <p class="text-center text-lg opacity-70 mb-12 font-poppins">
-      {lunettes.length} paire{lunettes.length > 1 ? "s" : ""} de lunettes
-    </p>
+<Layout title="Galerie - TaVue">
+  <div class="min-h-screen bg-base-200 px-4 py-12">
+    <div class="max-w-6xl mx-auto">
+      <h1 class="text-4xl font-bold text-center mb-12">Ma Galerie</h1>
 
-    {
-      lunettes.length === 0 ? (
-        <div class="alert alert-info shadow-lg max-w-2xl mx-auto">
-          <div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-6 h-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345h5.518c.305 0 .917.226 1.05.585.02.058.021.118.015.173l-.8 4.368a.563.563 0 00.102.3l3.116 3.116a.563.563 0 01-.44.94h-1.39l.564 2.256c.037.147.047.34-.023.565a.34.34 0 01-.076.104.6.6 0 01-.57.025l-3.217-.52-1.021 2.577c-.314.632-.966 1.03-1.7 1.03-.704 0-1.386-.398-1.7-1.03l-1.02-2.577-3.217.52c-.505.073-.961-.276-.666-.88a.544.544 0 00.023-.565l.564-2.256h-1.39a.562.562 0 01-.44-.94l3.116-3.116a.563.563 0 00.102-.3l-.8-4.368a.563.563 0 01.015-.173c.133-.36.745-.585 1.05-.585h5.518a.563.563 0 00.475-.345L11.48 3.5z"
-              />
-            </svg>
-            <span class="font-poppins font-semibold">
-              Aucune lunette encore
-            </span>
-            <p class="text-sm mt-2">
-              Créez votre première paire dans le configurateur !
-            </p>
+      {
+        lunettes.length === 0 ? (
+          <div class="text-center">
+            <p class="text-xl mb-6">Pas encore de lunettes</p>
+            <a href="/configurateur" class="btn btn-primary">
+              Créer une paire
+            </a>
           </div>
-        </div>
-      ) : (
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {lunettes.map((lunette) => (
-            <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
-              <figure class="px-8 pt-8 bg-base-200 min-h-64 flex items-center justify-center">
-                <div class="w-full h-full flex items-center justify-center">
+        ) : (
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {lunettes.map((lunette) => (
+              <div class="card bg-white shadow">
+                <div class="card-body">
+                  <h3 class="card-title text-lg">{lunette.nom_modele}</h3>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 595.28 841.89"
-                    class="w-32 h-32"
+                    class="h-32 w-full"
                     set:html={lunette.code_svg}
                   />
-                </div>
-              </figure>
-              <div class="card-body font-poppins">
-                <h2 class="card-title font-coiny text-xl text-accent">
-                  {lunette.nom_modele}
-                </h2>
-
-                <div class="space-y-2 text-sm opacity-70">
-                  <p>
-                    <span class="font-semibold">Date:</span>{" "}
-                    {new Date(lunette.date_crea).toLocaleDateString("fr-FR")}
+                  <p class="text-sm text-gray-600">
+                    {new Date(lunette.created).toLocaleDateString()}
                   </p>
-                  <p>
-                    <span class="font-semibold">Pont:</span>{" "}
-                    {lunette.largeur_pont}mm
-                  </p>
-                  <p>
-                    <span class="font-semibold">Taille verres:</span>{" "}
-                    {lunette.taille_verres}
-                  </p>
-                  {lunette.expand?.materiau && (
-                    <p>
-                      <span class="font-semibold">Matériau:</span>{" "}
-                      {lunette.expand.materiau.libelle}
-                    </p>
-                  )}
-                </div>
-
-                <div class="card-actions justify-between mt-6">
                   <button
-                    class="btn btn-sm btn-outline"
-                    data-lunette-id={lunette.id}
+                    class="btn btn-sm btn-error mt-4 delete-btn"
+                    data-id={lunette.id}
                   >
-                    👁️ Voir
-                  </button>
-                  <button
-                    class="btn btn-sm btn-outline btn-error delete-btn"
-                    data-lunette-id={lunette.id}
-                  >
-                    🗑️ Supprimer
+                    Supprimer
                   </button>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )
-    }
-
-    <div class="flex justify-center mt-12">
-      <a
-        href="/configurateur"
-        class="btn btn-accent btn-lg gap-2 font-poppins font-semibold"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="w-5 h-5"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"></path>
-        </svg>
-        Créer une nouvelle paire
-      </a>
+            ))}
+          </div>
+        )
+      }
     </div>
   </div>
 </Layout>
@@ -136,25 +65,10 @@ const lunettes = result.lunettes || [];
 <script>
   document.querySelectorAll(".delete-btn").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
-      const lunetteId = (e.target as HTMLButtonElement).dataset.lunetteId;
-
-      if (confirm("Êtes-vous sûr de vouloir supprimer cette lunette ?")) {
-        try {
-          const response = await fetch(`/api/lunettes/${lunetteId}/delete`, {
-            method: "DELETE",
-          });
-
-          const data = await response.json();
-          if (data.success) {
-            location.reload();
-          } else {
-            alert("Erreur: " + data.error);
-          }
-        } catch (error) {
-          alert("Erreur de suppression");
-          console.error(error);
-        }
-      }
+      if (!confirm("Sûr ?")) return;
+      const id = (e.target as HTMLButtonElement).dataset.id;
+      await fetch(`/api/lunettes/${id}/delete`, { method: "DELETE" });
+      window.location.reload();
     });
   });
 </script>

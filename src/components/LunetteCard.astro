@@ -1,0 +1,16 @@
+---
+const { lunette } = Astro.props;
+---
+
+<div>
+  <div class="card bg-base-100 shadow-xl">
+    <figure class="px-8 pt-8 bg-base-200 min-h-64 flex items-center justify-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 595.28 841.89"
+        class="w-32 h-32"
+        set:html={lunette.code_svg}
+      />
+    </figure>
+    <div class="card-body">
+</div>
