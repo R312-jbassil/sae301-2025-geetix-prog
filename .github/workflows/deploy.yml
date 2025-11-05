@@ -32,7 +32,7 @@ jobs:
         username: ${{ secrets.USERS }}
         key: ${{ secrets.PRIVATE_KEY }}
         port: 22005
-        source: "dist/*"
+        source: "dist/*,package.json,package-lock.json"
         target: "/var/www/sae301/"
         strip_components: 1
         rm: false
