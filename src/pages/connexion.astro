@@ -2,9 +2,9 @@
 import Layout from "../layouts/Layout.astro";
 
 // Vérifier si déjà connecté
-const authCookie = Astro.cookies.get('pb_auth');
+const authCookie = Astro.cookies.get("pb_auth");
 if (authCookie) {
-  return Astro.redirect('/profile');
+  return Astro.redirect("/profile");
 }
 ---
 
@@ -60,6 +60,9 @@ if (authCookie) {
           Créer un compte
         </a>
       </div>
+      <button id="googlelogin" class="cursor-pointer"
+        >Se connecter avec Google</button
+      >
     </div>
   </div>
 </Layout>
@@ -67,15 +70,28 @@ if (authCookie) {
 <script>
   import PocketBase from "pocketbase";
 
-  const pb = new PocketBase("http://127.0.0.1:8090");
+  const pb = new PocketBase("https://sae301.mathis-guellati.fr");
+
+  const googlelogin = document.getElementById("googlelogin");
+  googlelogin.onclick = async () => {
+    try {
+      await pb.collection("users").authWithOAuth2({ provider: "google" });
+      location.href = "/students";
+    } catch (err) {
+      document.getElementById("msg").textContent = "Échec de connexion Google";
+      console.error(err);
+    }
+  };
 
   document
     .getElementById("login-form")!
     .addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const email = (document.getElementById("email") as HTMLInputElement).value;
-      const password = (document.getElementById("password") as HTMLInputElement).value;
+      const email = (document.getElementById("email") as HTMLInputElement)
+        .value;
+      const password = (document.getElementById("password") as HTMLInputElement)
+        .value;
       const errorDiv = document.getElementById("error-message")!;
 
       try {

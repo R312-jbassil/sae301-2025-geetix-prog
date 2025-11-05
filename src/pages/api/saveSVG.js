@@ -5,7 +5,7 @@ export const POST = async ({ request, cookies }) => {
     const data = await request.json();
     const { nom_modele, code_svg, couleur_monture, couleur_branches } = data;
 
-    const pb = new PocketBase("http://127.0.0.1:8090");
+    const pb = new PocketBase("https://sae301.mathis-guellati.fr");
     const authCookie = cookies.get("pb_auth");
 
     if (!authCookie) {
