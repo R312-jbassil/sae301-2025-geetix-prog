@@ -25,26 +25,29 @@ jobs:
       run: |
         npm run build
         cp package.json dist/server/
+        cp package-lock.json dist/server/
+        
     - name: Deploy to VPS via SCP
       uses: appleboy/scp-action@v0.1.3
       with:
-        host: ${{ secrets.HOOST }}
-        username: ${{ secrets.USERS }}
-        key: ${{ secrets.PRIVATE_KEY }}
-        port: 22005
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22025
         source: "dist/*"
         target: "/var/www/sae301/"
         strip_components: 1
         rm: false
         overwrite: true
         debug: true
+        
     - name: Install production dependencies on VPS
       uses: appleboy/ssh-action@v1.0.0
       with:
-        host: ${{ secrets.HOOST }}
-        username: ${{ secrets.USERS }}
-        key: ${{ secrets.PRIVATE_KEY }}
-        port: 22005
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22025
         script: |
           cd /var/www/sae301/server
           npm install --production
