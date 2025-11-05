@@ -23,6 +23,7 @@ jobs:
       
     - name: Build project
       run: |
+        rm -rf dist/
         npm run build
         cp package.json dist/server/
         cp package-lock.json dist/server/
@@ -40,6 +41,7 @@ jobs:
         rm: false
         overwrite: true
         debug: true
+        timeout: 60s
         
     - name: Install production dependencies on VPS
       uses: appleboy/ssh-action@v1.0.0
