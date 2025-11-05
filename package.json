@@ -15,6 +15,7 @@
     "daisyui": "^5.4.3",
     "openai": "^6.8.1",
     "pocketbase": "^0.26.3",
+    "pocketbase-types": "^3.0.0",
     "tailwindcss": "^4.1.16"
   }
 }
