@@ -1,0 +1,259 @@
+---
+// src/pages/mes-lunettes.astro
+import pb, { getUserLunettes } from "../../backend/backend.mjs";
+import Layout from "../layouts/Layout.astro";
+
+const authCookie = Astro.cookies.get("pb_auth");
+if (authCookie) {
+  pb.authStore.loadFromCookie(authCookie.value);
+}
+
+if (!pb.authStore.isValid) {
+  return Astro.redirect("/login");
+}
+
+const user = pb.authStore.model;
+
+// Récupérer toutes les lunettes de l'utilisateur
+const { success, lunettes } = await getUserLunettes(authCookie?.value);
+---
+
+<Layout <div class="container mx-auto px-4 py-8">
+  <!-- Header -->
+  <div class="navbar bg-base-200 rounded-box mb-8">
+    <div class="flex-1">
+      <a href="/" class="btn btn-ghost text-xl">TaVue</a>
+    </div>
+    <div class="flex-none gap-2">
+      <a href="/configurateur" class="btn btn-primary btn-sm">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 mr-1"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"></path>
+        </svg>
+        Nouvelle lunette
+      </a>
+      <span class="text-sm">Bonjour, {user?.prenom}</span>
+      <button id="logout-btn" class="btn btn-ghost btn-sm">Déconnexion</button>
+    </div>
+  </div>
+
+  <h1 class="text-4xl font-bold text-center mb-8">Mes Lunettes</h1>
+
+  {
+    lunettes.length === 0 ? (
+      <div class="text-center py-16">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-24 w-24 mx-auto text-base-300 mb-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1"
+            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+          />
+        </svg>
+        <h2 class="text-2xl font-semibold mb-2">Aucune lunette créée</h2>
+        <p class="text-base-content/60 mb-6">
+          Commencez à créer vos modèles personnalisés
+        </p>
+        <a href="/configurateur" class="btn btn-primary">
+          Créer ma première lunette
+        </a>
+      </div>
+    ) : (
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {lunettes.map((lunette) => (
+          <div class="card bg-base-200 shadow-xl hover:shadow-2xl transition-shadow">
+            <figure class="px-6 pt-6 bg-base-100">
+              <div class="w-full aspect-video flex items-center justify-center p-4">
+                <div set:html={lunette.code_svg} class="w-full h-full" />
+              </div>
+            </figure>
+            <div class="card-body">
+              <h2 class="card-title">{lunette.nom_modele}</h2>
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold">Monture:</span>
+                  <div
+                    class="w-6 h-6 rounded-full border-2 border-base-content/20"
+                    style={`background-color: ${lunette.couleur_monture}`}
+                  />
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold">Branches:</span>
+                  <div
+                    class="w-6 h-6 rounded-full border-2 border-base-content/20"
+                    style={`background-color: ${lunette.couleur_branches}`}
+                  />
+                </div>
+              </div>
+              <div class="text-xs text-base-content/60">
+                Créé le{" "}
+                {new Date(lunette.date_crea).toLocaleDateString("fr-FR")}
+              </div>
+              <div class="card-actions justify-end mt-4">
+                <button
+                  class="btn btn-ghost btn-sm delete-btn"
+                  data-id={lunette.id}
+                  data-name={lunette.nom_modele}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                </button>
+                <a
+                  href={`/lunette/${lunette.id}`}
+                  class="btn btn-primary btn-sm"
+                >
+                  Voir détails
+                </a>
+                <button
+                  class="btn btn-accent btn-sm commander-btn"
+                  data-id={lunette.id}
+                >
+                  Commander
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  <!-- Modal de confirmation de suppression -->
+  <dialog id="delete-modal" class="modal">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg">Confirmer la suppression</h3>
+      <p class="py-4">
+        Êtes-vous sûr de vouloir supprimer <span
+          id="delete-name"
+          class="font-semibold"></span> ?
+      </p>
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn btn-ghost">Annuler</button>
+        </form>
+        <button id="confirm-delete" class="btn btn-error">Supprimer</button>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>Fermer</button>
+    </form>
+  </dialog>
+
+  <!-- Toast -->
+  <div class="toast toast-end hidden" id="toast">
+    <div class="alert alert-success">
+      <span id="toast-message">Action réussie !</span>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  let lunetteToDelete = "";
+
+  // Afficher un toast
+  function showToast(message: string, type: "success" | "error" = "success") {
+    const toast = document.getElementById("toast");
+    const toastMessage = document.getElementById("toast-message");
+    if (toast && toastMessage) {
+      toastMessage.textContent = message;
+      const alert = toast.querySelector(".alert");
+      if (alert) {
+        alert.className = `alert alert-${type}`;
+      }
+      toast.classList.remove("hidden");
+      setTimeout(() => toast.classList.add("hidden"), 3000);
+    }
+  }
+
+  // Gestion de la suppression
+  document.querySelectorAll(".delete-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-id");
+      const name = btn.getAttribute("data-name");
+      if (id && name) {
+        lunetteToDelete = id;
+        const nameSpan = document.getElementById("delete-name");
+        if (nameSpan) nameSpan.textContent = name;
+        const modal = document.getElementById(
+          "delete-modal"
+        ) as HTMLDialogElement;
+        modal?.showModal();
+      }
+    });
+  });
+
+  // Confirmer la suppression
+  document
+    .getElementById("confirm-delete")
+    ?.addEventListener("click", async () => {
+      if (!lunetteToDelete) return;
+
+      try {
+        const response = await fetch(`/api/deleteLunette`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: lunetteToDelete }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showToast("Lunette supprimée avec succès", "success");
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          showToast("Erreur lors de la suppression", "error");
+        }
+      } catch (error) {
+        showToast("Erreur lors de la suppression", "error");
+      }
+
+      const modal = document.getElementById(
+        "delete-modal"
+      ) as HTMLDialogElement;
+      modal?.close();
+    });
+
+  // Gestion de la commande
+  document.querySelectorAll(".commander-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-id");
+      if (id) {
+        window.location.href = `/commander?lunette=${id}`;
+      }
+    });
+  });
+
+  // Déconnexion
+  document.getElementById("logout-btn")?.addEventListener("click", () => {
+    document.cookie =
+      "pb_auth=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    window.location.href = "/login";
+  });
+</script>

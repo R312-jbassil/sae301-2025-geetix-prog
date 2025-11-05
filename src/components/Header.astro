@@ -1,9 +1,36 @@
 ---
-
+import Creation from "../assets/icons/creation.svg";
+import Connexion from "../assets/icons/connexion.svg";
 ---
 
-<header>
-  <nav>
-    <a href="/" class="font-coiny">TaVue</a>
-  </nav>
+<header class="navbar bg-base-100 border-b border-base-300 px-25 py-4">
+  <div class="navbar-start">
+    <a href="/" class="font-heading text-accent text-4xl font-coiny font-bold">TaVue</a>
+  </div>
+
+  <div class="navbar-end">
+    <ul class="menu menu-horizontal gap-6 text-base-content">
+      <li>
+        <a href="/creer" class="hover:text-accent font-poppins transition-colors"> Créer </a>
+      </li>
+      <li>
+        <a
+          href="/creations"
+          class="flex items-center gap-2 hover:text-accent font-poppins transition-colors"
+        >
+          <img src={Creation.src} alt="" class="w-5 h-5" />
+          Mes créations
+        </a>
+      </li>
+      <li>
+        <a
+          href="/connexion"
+          class="flex items-center gap-2 hover:text-accent font-poppins transition-colors"
+        >
+          <img src={Connexion.src} alt="" class="w-5 h-5" />
+          Connexion
+        </a>
+      </li>
+    </ul>
+  </div>
 </header>

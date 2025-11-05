@@ -1,0 +1,73 @@
+---
+import Insta from "../assets/icons/insta.svg";
+import Facebook from "../assets/icons/facebook.svg";
+import Mail from "../assets/icons/mail.svg";
+---
+
+<footer class="bg-secondary text-secondary-content py-6 mt-12">
+  <div class="flex mx-50 justify-between">
+    <div class="flex flex-col space-y-10">
+      <h2 class="font-coiny text-3xl text-primary">TaVue</h2>
+      <p class="font-poppins w-125 opacity-90">
+        Lunettes sur mesure, fabriquées en France avec passion et savoir-faire
+        artisanal.
+      </p>
+      <div class="flex gap-5">
+        <div
+          class="w-10 h-10 rounded-full border-2 flex justify-center items-center border-primary opacity-60"
+        >
+          <img src={Insta.src} alt="Instagram" />
+        </div>
+        <div
+          class="w-10 h-10 rounded-full border-2 flex justify-center items-center border-primary opacity-60"
+        >
+          <img src={Facebook.src} alt="Facebook" />
+        </div>
+        <div
+          class="w-10 h-10 rounded-full border-2 flex justify-center items-center border-primary opacity-60"
+        >
+          <img src={Mail.src} alt="Mail" />
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col space-y-10">
+      <p class="font-poppins text-xl">Navigation</p>
+      <ul class="space-y-2">
+        <li><a href="#" class="hover:underline opacity-90">Accueil</a></li>
+        <li>
+          <a href="#creer" class="hover:underline opacity-90">Créer mes lunettes</a>
+        </li>
+        <li>
+          <a href="/galerie" class="hover:underline opacity-90">Galerie</a>
+        </li>
+        <li><a href="/connexion" class="hover:underline opacity-90">Connexion</a></li>
+      </ul>
+    </div>
+    <div class="flex flex-col space-y-2">
+      <p class="font-poppins text-xl">Newsletter</p>
+      <p class="font-poppins w-125 opacity-90">
+        Inscrivez-vous pour recevoir nos nouveautés et offres exclusives.
+      </p>
+      <div class="flex space-x-3">
+        <input
+          type="email"
+          placeholder="Votre email"
+          class="input input-primary text-secondary"
+        />
+        <button class="btn btn-outline"> OK </button>
+      </div>
+      <p>
+        En vous inscrivant, vous acceptez notre politique de confidentialité.
+      </p>
+    </div>
+  </div>
+  <div class="w-full px-50">
+    <hr class="mt-6 border-t-2 border-primary/30" />
+  </div>
+  <div
+    class="flex justify-between mx-50 mt-4 space-x-6 text-sm opacity-90 font-poppins"
+  >
+    <p>Conçu et fabriqué en France avec amour</p>
+    <p>© {new Date().getFullYear()} TaVue - Tous droits réservés</p>
+  </div>
+</footer>
