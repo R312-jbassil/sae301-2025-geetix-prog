@@ -1,8 +1,7 @@
-import PocketBase from "pocketbase";
+import pb from "../../../../utils/pb";
 
 export const DELETE = async ({ params, cookies }) => {
   try {
-    const pb = new PocketBase("https://sae301.mathis-guellati.fr");
     const authCookie = cookies.get("pb_auth");
 
     if (!authCookie) {

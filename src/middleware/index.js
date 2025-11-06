@@ -1,6 +1,4 @@
-import PocketBase from "pocketbase";
-
-const pb = new PocketBase("https://sae301.mathis-guellati.fr");
+import pb from "../utils/pb";
 
 export const onRequest = async (context, next) => {
   // Charger l'auth depuis le cookie

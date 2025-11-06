@@ -1,13 +1,13 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import PocketBase from "pocketbase";
+import pb from "../utils/pb";
 
 const authCookie = Astro.cookies.get("pb_auth");
 if (!authCookie) {
   return Astro.redirect("/connexion");
 }
 
-const pb = new PocketBase("https://sae301.mathis-guellati.fr");
+// pb is imported from src/utils/pb
 const authData = JSON.parse(decodeURIComponent(authCookie.value));
 pb.authStore.save(authData.token, authData.model);
 
@@ -53,7 +53,7 @@ const lunettesAvecPrix = lunettes.map((lunette: any) => {
               </div>
             ) : (
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {lunettesAvecPrix.map((lunette) => (
+                {lunettesAvecPrix.map((lunette: any) => (
                   <div class="card bg-base-100 shadow-xl" data-lunette-id={lunette.id}>
                     <figure class="px-6 pt-6 bg-base-200 flex items-center justify-center min-h-[400px]" 
                       style={`--monture-color: ${lunette.couleur_monture || "#000000"}; --branches-color: ${lunette.couleur_branches || "#000000"};`}>
@@ -174,7 +174,7 @@ const lunettesAvecPrix = lunettes.map((lunette: any) => {
               </div>
             ) : (
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {configIA.map((svg) => (
+                {configIA.map((svg: any) => (
                   <div class="card bg-base-100 shadow-xl" data-config-id={svg.id}>
                     <figure class="px-6 pt-6 bg-base-200 flex items-center justify-center min-h-[400px]">
                       <div set:html={svg.svg} />

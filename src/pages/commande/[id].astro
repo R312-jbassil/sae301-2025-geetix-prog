@@ -1,6 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import PocketBase from "pocketbase";
+import pb from "../../utils/pb";
 
 const { id } = Astro.params;
 
@@ -9,7 +9,7 @@ if (!id) {
   return Astro.redirect("/mes-lunettes");
 }
 
-const pb = new PocketBase("https://sae301.mathis-guellati.fr");
+// pb is imported from src/utils/pb
 const authCookie = Astro.cookies.get("pb_auth");
 
 if (!authCookie) {

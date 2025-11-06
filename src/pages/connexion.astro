@@ -68,20 +68,21 @@ if (authCookie) {
 </Layout>
 
 <script>
-  import PocketBase from "pocketbase";
-
-  const pb = new PocketBase("https://sae301.mathis-guellati.fr");
+  import pb from "../utils/pb";
 
   const googlelogin = document.getElementById("googlelogin");
-  googlelogin.onclick = async () => {
-    try {
-      await pb.collection("users").authWithOAuth2({ provider: "google" });
-      location.href = "/students";
-    } catch (err) {
-      document.getElementById("msg").textContent = "Échec de connexion Google";
-      console.error(err);
-    }
-  };
+  if (googlelogin) {
+    (googlelogin as HTMLButtonElement).onclick = async () => {
+      try {
+        await pb.collection("users").authWithOAuth2({ provider: "google" });
+        location.href = "/students";
+      } catch (err) {
+        const msgEl = document.getElementById("msg");
+        if (msgEl) msgEl.textContent = "Échec de connexion Google";
+        console.error(err);
+      }
+    };
+  }
 
   document
     .getElementById("login-form")!

@@ -1,11 +1,10 @@
-import PocketBase from "pocketbase";
+import pb from "../../utils/pb";
 
 export const POST = async ({ request, cookies }) => {
   try {
     const data = await request.json();
     const { nom_modele, code_svg, couleur_monture, couleur_branches } = data;
 
-    const pb = new PocketBase("https://sae301.mathis-guellati.fr");
     const authCookie = cookies.get("pb_auth");
 
     if (!authCookie) {

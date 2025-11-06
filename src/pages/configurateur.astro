@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import PocketBase from "pocketbase";
+import pb from "../utils/pb";
 
 // Vérifier l'authentification
 const authCookie = Astro.cookies.get("pb_auth");
@@ -9,8 +9,7 @@ if (!authCookie) {
 }
 
 // Récupérer les matériaux
-const pb = new PocketBase("https://sae301.mathis-guellati.fr");
-let materiaux = [];
+let materiaux: any[] = [];
 try {
   materiaux = await pb.collection("Materiau").getFullList({ sort: "libelle" });
 } catch (error) {
@@ -45,7 +44,7 @@ try {
             </h2>
             <div class="grid grid-cols-3 gap-4">
               {
-                materiaux.map((mat, index) => (
+                materiaux.map((mat: any, index: number) => (
                   <button
                     class={`btn btn-outline hover:btn-accent p-6 h-auto flex-col gap-3 ${index === 0 ? "ring-2 ring-accent" : ""}`}
                     data-type="materiau"
