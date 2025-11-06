@@ -1,4 +1,4 @@
-import pb from "../../../utils/pb";
+import pb from "../../utils/pb";
 
 export const POST = async ({ request, cookies }) => {
   const { email, password } = await request.json();
