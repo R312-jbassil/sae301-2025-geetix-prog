@@ -13,7 +13,18 @@ export const DELETE = async ({ params, cookies }) => {
     const authData = JSON.parse(decodeURIComponent(authCookie.value));
     pb.authStore.save(authData.token, authData.model);
 
-    // Supprime l'enregistrement PocketBase
+    const userId = pb.authStore.model.id;
+
+    // Vérifie que l'enregistrement appartient à l'utilisateur
+    const lunette = await pb.collection("Lunettes").getOne(params.id);
+
+    if (lunette.user !== userId) {
+      return new Response(JSON.stringify({ error: "Non autorisé" }), {
+        status: 403,
+      });
+    }
+
+    // Supprime l'enregistrement
     await pb.collection("Lunettes").delete(params.id);
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
