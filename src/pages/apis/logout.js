@@ -1,4 +1,9 @@
-export const POST = async ({ cookies }) => {
-  cookies.delete("pb_auth", { path: "/" });
-  return new Response(JSON.stringify({ success: true }), { status: 200 });
+export const POST = async ({ cookies, redirect }) => {
+  cookies.delete("pb_auth", {
+    path: "/",
+    maxAge: 0,
+    expires: new Date(0),
+  });
+
+  return redirect("/connexion", 303);
 };
