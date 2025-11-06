@@ -265,7 +265,7 @@ const lunettesAvecPrix = lunettes.map((lunette: any) => {
     );
     const modal = document.getElementById("delete-modal") as HTMLDialogElement;
 
-    const endpoint = deleteType === "config" ? `/api/config/${deleteId}/delete` : `/api/lunettes/${deleteId}/delete`;
+    const endpoint = deleteType === "config" ? `/apis/config/${deleteId}/delete` : `/apis/lunettes/${deleteId}/delete`;
 
     try {
       const response = await fetch(endpoint, {

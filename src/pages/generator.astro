@@ -263,7 +263,7 @@ if (!authCookie) {
     }
 
     async function generateSVG(messages) {
-      const res = await fetch("/api/generateSVG", {
+      const res = await fetch("/apis/generateSVG", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages }),
