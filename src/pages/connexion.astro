@@ -1,7 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
 
-// Vérifier si déjà connecté
 const authCookie = Astro.cookies.get("pb_auth");
 if (authCookie) {
   return Astro.redirect("/profile");
@@ -60,33 +59,14 @@ if (authCookie) {
           Créer un compte
         </a>
       </div>
-      <button id="googlelogin" class="cursor-pointer"
-        >Se connecter avec Google</button
-      >
     </div>
   </div>
 </Layout>
 
 <script>
-  import pb from "../utils/pb";
-
-  const googlelogin = document.getElementById("googlelogin");
-  if (googlelogin) {
-    (googlelogin as HTMLButtonElement).onclick = async () => {
-      try {
-        await pb.collection("users").authWithOAuth2({ provider: "google" });
-        location.href = "/students";
-      } catch (err) {
-        const msgEl = document.getElementById("msg");
-        if (msgEl) msgEl.textContent = "Échec de connexion Google";
-        console.error(err);
-      }
-    };
-  }
-
-  document
-    .getElementById("login-form")!
-    .addEventListener("submit", async (e) => {
+  const loginForm = document.getElementById("login-form");
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const email = (document.getElementById("email") as HTMLInputElement)
@@ -96,19 +76,23 @@ if (authCookie) {
       const errorDiv = document.getElementById("error-message")!;
 
       try {
-        await pb.collection("users").authWithPassword(email, password);
-
-        const authData = JSON.stringify({
-          token: pb.authStore.token,
-          model: pb.authStore.model,
+        const response = await fetch("/apis/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
         });
-        document.cookie = `pb_auth=${encodeURIComponent(authData)}; path=/; max-age=86400`;
 
-        window.location.href = "/mes-lunettes";
+        if (response.ok) {
+          window.location.href = "/profile";
+        } else {
+          errorDiv.classList.remove("hidden");
+          errorDiv.querySelector("span")!.textContent =
+            "Email ou mot de passe incorrect";
+        }
       } catch (error) {
         errorDiv.classList.remove("hidden");
-        errorDiv.querySelector("span")!.textContent =
-          "Email ou mot de passe incorrect";
+        errorDiv.querySelector("span")!.textContent = "Erreur de connexion";
       }
     });
+  }
 </script>

@@ -91,7 +91,7 @@ import Layout from "../layouts/Layout.astro";
 
         <div class="divider">OU</div>
 
-        <a href="/profile" class="btn btn-outline w-full">
+        <a href="/connexion" class="btn btn-outline w-full">
           J'ai déjà un compte
         </a>
       </div>
@@ -100,8 +100,6 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <script>
-  import pb from "../utils/pb";
-
   document
     .getElementById("signup-form")!
     .addEventListener("submit", async (e) => {
@@ -127,23 +125,26 @@ import Layout from "../layouts/Layout.astro";
       }
 
       try {
-        await pb.collection("users").create({
-          email: email,
-          password: password,
-          passwordConfirm: passwordConfirm,
-          nom: nom,
-          prenom: prenom,
+        const response = await fetch("/apis/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            password,
+            passwordConfirm,
+            nom,
+            prenom,
+          }),
         });
 
-        await pb.collection("users").authWithPassword(email, password);
-
-        const authData = JSON.stringify({
-          token: pb.authStore.token,
-          model: pb.authStore.model,
-        });
-        document.cookie = `pb_auth=${encodeURIComponent(authData)}; path=/; max-age=86400`;
-
-        window.location.href = "/profile";
+        if (response.ok) {
+          window.location.href = "/profile";
+        } else {
+          const error = await response.json();
+          errorDiv.classList.remove("hidden");
+          errorDiv.querySelector("span")!.textContent =
+            error.error || "Erreur lors de l'inscription";
+        }
       } catch (error: any) {
         errorDiv.classList.remove("hidden");
         errorDiv.querySelector("span")!.textContent =
