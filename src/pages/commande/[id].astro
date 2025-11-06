@@ -9,7 +9,7 @@ if (!id) {
   return Astro.redirect("/mes-lunettes");
 }
 
-const pb = new PocketBase("http://127.0.0.1:8090");
+const pb = new PocketBase("https://sae301.mathis-guellati.fr");
 const authCookie = Astro.cookies.get("pb_auth");
 
 if (!authCookie) {
@@ -151,7 +151,9 @@ const taille =
           <!-- Vous pensez à -->
           <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
-              <h2 class="card-title text-accent font-coiny text-2xl mb-4">Vous pensez à</h2>
+              <h2 class="card-title text-accent font-coiny text-2xl mb-4">
+                Vous pensez à
+              </h2>
 
               <div class="space-y-3 font-poppins text-sm">
                 <div class="flex items-start gap-2">
