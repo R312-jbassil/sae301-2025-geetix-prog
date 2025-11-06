@@ -1,0 +1,4 @@
+connexion pb : 
+email : mathis.guellati@gmail.com
+mdp : pocketbase
+
