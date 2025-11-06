@@ -1,10 +1,11 @@
 import PocketBase from "pocketbase";
-import type { TypedPocketBase } from "./pocketbase-types";
-var path = "";
-if (import.meta.env.MODE === "development")
-  path = "http://localhost:8085"; //localhost = machine de dev
-else path = "http://localhost:8085"; //url du site
-const pb = new PocketBase(
-  "http://127.0.0.1:8090"
-) as TypedPocketBase;
+
+// Use local PocketBase when developing, production URL when deployed
+const DEV_URL = "http://127.0.0.1:8090";
+const PROD_URL = "https://sae301.mathis-guellati.fr";
+
+const baseURL = import.meta.env.MODE === "development" ? DEV_URL : PROD_URL;
+
+const pb = new PocketBase(baseURL);
+
 export default pb;
