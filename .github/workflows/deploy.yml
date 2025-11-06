@@ -41,8 +41,7 @@ jobs:
         rm: false
         overwrite: true
         debug: true
-        timeout: 120s
-        command_timeout: 120s
+        timeout: 60s
         
     - name: Install production dependencies on VPS
       uses: appleboy/ssh-action@v1.0.0
