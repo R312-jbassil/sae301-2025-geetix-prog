@@ -100,6 +100,8 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <script>
+  import pb from "../utils/pb";
+
   document
     .getElementById("signup-form")!
     .addEventListener("submit", async (e) => {
@@ -125,26 +127,23 @@ import Layout from "../layouts/Layout.astro";
       }
 
       try {
-        const response = await fetch("/apis/signup", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email,
-            password,
-            passwordConfirm,
-            nom,
-            prenom,
-          }),
+        await pb.collection("users").create({
+          email,
+          password,
+          passwordConfirm,
+          nom,
+          prenom,
         });
 
-        if (response.ok) {
-          window.location.href = "/profile";
-        } else {
-          const error = await response.json();
-          errorDiv.classList.remove("hidden");
-          errorDiv.querySelector("span")!.textContent =
-            error.error || "Erreur lors de l'inscription";
-        }
+        await pb.collection("users").authWithPassword(email, password);
+
+        const authData = JSON.stringify({
+          token: pb.authStore.token,
+          model: pb.authStore.model,
+        });
+        document.cookie = `pb_auth=${encodeURIComponent(authData)}; path=/; max-age=86400`;
+
+        window.location.href = "/profile";
       } catch (error: any) {
         errorDiv.classList.remove("hidden");
         errorDiv.querySelector("span")!.textContent =

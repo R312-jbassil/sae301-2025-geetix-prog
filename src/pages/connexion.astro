@@ -64,9 +64,11 @@ if (authCookie) {
 </Layout>
 
 <script>
-  const loginForm = document.getElementById("login-form");
-  if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
+  import pb from "../utils/pb";
+
+  document
+    .getElementById("login-form")!
+    .addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const email = (document.getElementById("email") as HTMLInputElement)
@@ -76,23 +78,19 @@ if (authCookie) {
       const errorDiv = document.getElementById("error-message")!;
 
       try {
-        const response = await fetch("/apis/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        });
+        await pb.collection("users").authWithPassword(email, password);
 
-        if (response.ok) {
-          window.location.href = "/profile";
-        } else {
-          errorDiv.classList.remove("hidden");
-          errorDiv.querySelector("span")!.textContent =
-            "Email ou mot de passe incorrect";
-        }
+        const authData = JSON.stringify({
+          token: pb.authStore.token,
+          model: pb.authStore.model,
+        });
+        document.cookie = `pb_auth=${encodeURIComponent(authData)}; path=/; max-age=86400`;
+
+        window.location.href = "/profile";
       } catch (error) {
         errorDiv.classList.remove("hidden");
-        errorDiv.querySelector("span")!.textContent = "Erreur de connexion";
+        errorDiv.querySelector("span")!.textContent =
+          "Email ou mot de passe incorrect";
       }
     });
-  }
 </script>

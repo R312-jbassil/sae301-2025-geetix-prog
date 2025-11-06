@@ -5,6 +5,6 @@ if (import.meta.env.MODE === "development")
   path = "http://localhost:8085"; //localhost = machine de dev
 else path = "http://localhost:8085"; //url du site
 const pb = new PocketBase(
-  "https://sae301.mathis-guellati.fr"
+  "http://127.0.0.1:8090"
 ) as TypedPocketBase;
 export default pb;
