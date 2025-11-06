@@ -212,7 +212,7 @@ if (!authCookie) {
 
     async function saveToPocketBase(svgCode) {
       try {
-        const response = await fetch("/api/saveSVG", {
+        const response = await fetch("/apis/saveSVG", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
